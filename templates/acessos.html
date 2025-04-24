@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acessos Registrados</title>
+</head>
+<body>
+    <h1>Acessos Registrados</h1>
+    <table border="1">
+        <tr>
+            <th>IP</th>
+            <th>Cidade</th>
+            <th>Região</th>
+            <th>País</th>
+            <th>Localização (Lat/Lon)</th>
+        </tr>
+        {% for acesso in acessos %}
+        <tr>
+            <td>{{ acesso.ip }}</td>
+            <td>{{ acesso.city }}</td>
+            <td>{{ acesso.region }}</td>
+            <td>{{ acesso.country }}</td>
+            <td>{{ acesso.lat }}, {{ acesso.lon }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
