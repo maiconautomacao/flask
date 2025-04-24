@@ -5,14 +5,20 @@
     <title>Mapa de Acessos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
         }
         h1 {
             text-align: center;
             padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+        #map {
+            height: 100vh; /* Isso faz o mapa ocupar toda a altura da tela */
+            width: 100%;   /* Isso faz o mapa ocupar toda a largura da tela */
         }
         pre {
             background-color: #f4f4f4;
@@ -21,10 +27,6 @@
             font-size: 14px;
             white-space: pre-wrap;
             word-wrap: break-word;
-        }
-        #map {
-            height: 90vh;
-            width: 100%;
         }
     </style>
 </head>
