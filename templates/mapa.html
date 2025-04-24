@@ -6,14 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    html, body {
+    html, body, #map {
       margin: 0;
       padding: 0;
       height: 100%;
-    }
-    #map {
       width: 100%;
-      height: 100%;
     }
   </style>
 </head>
@@ -23,23 +20,37 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     const acessos = {{ acessos | tojson }};
-    const map = L.map('map').setView([-14.2350, -51.9253], 4); // Brasil
+    const map = L.map('map').setView([-14.2350, -51.9253], 4); // Centro do Brasil
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
+    // Adicionar todos os acessos como marcadores
     acessos.forEach(acesso => {
       if (acesso.lat && acesso.lon) {
-        const marker = L.marker([acesso.lat, acesso.lon]).addTo(map);
-        marker.bindPopup(`
-          <strong>IP:</strong> ${acesso.ip}<br>
-          <strong>Cidade:</strong> ${acesso.city}<br>
-          <strong>Região:</strong> ${acesso.region}<br>
-          <strong>País:</strong> ${acesso.country}
-        `);
+        L.marker([acesso.lat, acesso.lon])
+          .addTo(map)
+          .bindPopup(`<strong>IP:</strong> ${acesso.ip}<br>
+                      <strong>${acesso.city}, ${acesso.region} - ${acesso.country}</strong>`);
       }
     });
+
+    // Tentar obter localização GPS atual do visitante
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        const marker = L.marker([lat, lon]).addTo(map);
+        map.setView([lat, lon], 13);
+        marker.bindPopup("📍Sua localização atual (GPS)").openPopup();
+      }, function (error) {
+        console.warn("Geolocalização não permitida ou falhou. Exibindo IPs.");
+      });
+    } else {
+      console.warn("Navegador não suporta geolocalização.");
+    }
   </script>
 </body>
 </html>
