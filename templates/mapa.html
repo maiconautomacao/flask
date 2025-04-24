@@ -1,63 +1,31 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Mapa de Acessos</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-        h1 {
-            text-align: center;
-            padding: 10px;
-            background-color: #333;
-            color: white;
-        }
-        #map {
-            height: 100vh; /* Isso faz o mapa ocupar toda a altura da tela */
-            width: 100%;   /* Isso faz o mapa ocupar toda a largura da tela */
-        }
-        pre {
-            background-color: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-    </style>
+  <title>IP no Mapa</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    #map { height: 500px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-    <h1>Mapa de Acessos</h1>
+  <h1>Seu IP: {{ ip }}</h1>
+  {% if lat and lon %}
+    <p>Local aproximado: {{ city }}, {{ region }} - {{ country }}</p>
     <div id="map"></div>
-
-    <h2>Informações de Acessos</h2>
-    <pre>{{ acessos | tojson(indent=4) }}</pre>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
-        const acessos = {{ acessos | tojson }};
-        const map = L.map('map').setView([-14.2350, -51.9253], 4); // Centro do Brasil
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        acessos.forEach(acesso => {
-            if (acesso.lat !== 0.0 && acesso.lon !== 0.0) {
-                const marker = L.marker([acesso.lat, acesso.lon]).addTo(map);
-                marker.bindPopup(`
-                    <strong>IP:</strong> ${acesso.ip}<br>
-                    <strong>Cidade:</strong> ${acesso.city}<br>
-                    <strong>Região:</strong> ${acesso.region}<br>
-                    <strong>País:</strong> ${acesso.country}
-                `);
-            }
-        });
+      var map = L.map('map').setView([{{ lat }}, {{ lon }}], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+      L.marker([{{ lat }}, {{ lon }}]).addTo(map)
+        .bindPopup("Você está por aqui 👋")
+        .openPopup();
     </script>
+  {% else %}
+    <p>Não foi possível localizar seu IP.</p>
+  {% endif %}
 </body>
 </html>
