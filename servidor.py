@@ -4,18 +4,24 @@ import requests
 app = Flask(__name__)
 acessos = []
 
+acessos = []
+
 @app.route('/')
 def redirecionar_instagram():
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     geo_info = requests.get(f'http://ipinfo.io/{ip}/json').json()
+
+    # Garantir que seja apenas um IP
+    ip_unico = ip.split(',')[0].strip()  # Se múltiplos IPs estiverem sendo passados, pegue apenas o primeiro
 
     loc = geo_info.get('loc', '')
     lat, lon = (0.0, 0.0)
     if ',' in loc:
         lat, lon = map(float, loc.split(','))
 
+    # Armazenar apenas um IP por vez
     acessos.append({
-        'ip': ip,
+        'ip': ip_unico,
         'lat': lat,
         'lon': lon,
         'city': geo_info.get('city', 'Desconhecida'),
@@ -27,6 +33,8 @@ def redirecionar_instagram():
 
 @app.route('/mapa')
 def mapa():
+    # Supondo que você tenha os IPs e geolocalização armazenados em uma lista ou banco
+    # Exemplo com dados reais
     return render_template('mapa.html', acessos=acessos)
 
 @app.route('/acessos')
@@ -34,4 +42,4 @@ def mostrar_acessos():
     return jsonify(acessos)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5002)

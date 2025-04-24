@@ -1,29 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Mapa de Acessos</title>
-    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        #map { height: 600px; width: 100%; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            padding: 10px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #map {
+            height: 90vh;
+            width: 100%;
+        }
     </style>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 </head>
 <body>
     <h1>Mapa de Acessos</h1>
     <div id="map"></div>
+
+    <h2>Informações de Acessos</h2>
+    <pre>{{ acessos | tojson(indent=4) }}</pre>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        var map = L.map('map').setView([-14.2350, -51.9253], 4); // Brasil
+        const acessos = {{ acessos | tojson }};
+        const map = L.map('map').setView([-14.2350, -51.9253], 4); // Centro do Brasil
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        var acessos = {{ acessos | tojson }};
-        acessos.forEach(function(acesso) {
-            L.marker([acesso.lat, acesso.lon])
-                .addTo(map)
-                .bindPopup(`<b>IP:</b> ${acesso.ip}<br><b>Cidade:</b> ${acesso.city}<br><b>Região:</b> ${acesso.region}<br><b>País:</b> ${acesso.country}`);
+        acessos.forEach(acesso => {
+            if (acesso.lat !== 0.0 && acesso.lon !== 0.0) {
+                const marker = L.marker([acesso.lat, acesso.lon]).addTo(map);
+                marker.bindPopup(`
+                    <strong>IP:</strong> ${acesso.ip}<br>
+                    <strong>Cidade:</strong> ${acesso.city}<br>
+                    <strong>Região:</strong> ${acesso.region}<br>
+                    <strong>País:</strong> ${acesso.country}
+                `);
+            }
         });
     </script>
 </body>
