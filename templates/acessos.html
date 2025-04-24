@@ -1,48 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Acessos</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .acesso {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s;
-        }
-        .acesso:hover {
-            background-color: #f0f0f0;
-        }
-        .acesso strong {
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Lista de Acessos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .acesso {
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Lista de Acessos</h1>
+  <h1>Acessos Registrados</h1>
 
-    {% for acesso in acessos %}
-        <div class="acesso">
-            <strong>IP:</strong> {{ acesso.ip }}<br>
-            <strong>Cidade:</strong> {{ acesso.city }}<br>
-            <strong>País:</strong> {{ acesso.country }}<br>
-            <strong>Latitude:</strong> {{ acesso.lat }}<br>
-            <strong>Longitude:</strong> {{ acesso.lon }}<br>
-        </div>
-    {% endfor %}
+  {% for acesso in acessos %}
+    <div class="acesso">
+      <strong>IP:</strong> {{ acesso.ip }}<br>
+      <strong>Cidade:</strong> {{ acesso.city }}<br>
+      <strong>Região:</strong> {{ acesso.region }}<br>
+      <strong>País:</strong> {{ acesso.country }}<br>
+      <strong>Lat/Lon:</strong> {{ acesso.lat }}, {{ acesso.lon }}
+    </div>
+  {% endfor %}
 
 </body>
 </html>

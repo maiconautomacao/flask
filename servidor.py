@@ -1,31 +1,35 @@
 from flask import Flask, redirect, request, jsonify, render_template
 import requests
+import os
 
 app = Flask(__name__)
 acessos = []
 
 @app.route('/')
-def redirecionar_instagram():
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    geo_info = requests.get(f'http://ipinfo.io/{ip}/json').json()
+def redirecionar_e_registrar():
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
 
-    # Garantir que seja apenas um IP
-    ip_unico = ip.split(',')[0].strip()  # Se múltiplos IPs estiverem sendo passados, pegue apenas o primeiro
+    try:
+        geo_info = requests.get(f'https://ipinfo.io/{ip}/json').json()
+        loc = geo_info.get('loc')
+        if loc:
+            lat, lon = map(float, loc.split(','))
+        else:
+            lat, lon = None, None
+    except Exception as e:
+        print(f"Erro ao buscar localização: {e}")
+        lat, lon = None, None
+        geo_info = {}
 
-    loc = geo_info.get('loc', '')
-    lat, lon = (0.0, 0.0)
-    if ',' in loc:
-        lat, lon = map(float, loc.split(','))
-
-    # Armazenar apenas um IP por vez
-    acessos.append({
-        'ip': ip_unico,
-        'lat': lat,
-        'lon': lon,
-        'city': geo_info.get('city', 'Desconhecida'),
-        'region': geo_info.get('region', 'Desconhecida'),
-        'country': geo_info.get('country', 'Desconhecido'),
-    })
+    if lat is not None and lon is not None:
+        acessos.append({
+            'ip': ip,
+            'lat': lat,
+            'lon': lon,
+            'city': geo_info.get('city', 'Desconhecida'),
+            'region': geo_info.get('region', 'Desconhecida'),
+            'country': geo_info.get('country', 'Desconhecido'),
+        })
 
     return redirect("https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0", code=302)
 
@@ -38,4 +42,5 @@ def mostrar_acessos():
     return jsonify(acessos)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5002)
+    port = int(os.environ.get("PORT", 5000))  # para compatibilidade com Render
+    app.run(debug=False, host='0.0.0.0', port=port)
