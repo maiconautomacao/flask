@@ -18,10 +18,14 @@ def registrar():
         'lat': data.get('lat'),
         'lon': data.get('lon'),
         'precisa': data.get('precisa', False),
-        'timestamp': datetime.datetime.now().isoformat()
+        'timestamp': datetime.datetime.now().isoformat(),
+        'city': data.get('city', 'Desconhecida'),
+        'region': data.get('region', ''),
+        'country': data.get('country', '')
     }
     acessos.append(acesso)
     return jsonify({'status': 'ok'})
+
 
 @app.route('/acessos')
 def mostrar_acessos():

