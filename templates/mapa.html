@@ -6,9 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    html, body, #map {
+    html, body {
+      height: 100%;
       margin: 0;
       padding: 0;
+    }
+    #map {
       height: 100%;
       width: 100%;
     }
@@ -19,7 +22,8 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const map = L.map('map').setView([-14.2350, -51.9253], 4);
+    const map = L.map('map').setView([-14.2350, -51.9253], 4); // Brasil
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
@@ -47,11 +51,14 @@
           body: JSON.stringify({ lat, lon })
         });
 
-        const marker = L.marker([lat, lon]).addTo(map);
+        L.marker([lat, lon])
+          .addTo(map)
+          .bindPopup("📍 Sua localização atual")
+          .openPopup();
+
         map.setView([lat, lon], 13);
-        marker.bindPopup("📍 Sua localização atual").openPopup();
       }, err => {
-        console.warn("Permissão de GPS negada ou erro:", err);
+        console.warn("Permissão de localização negada:", err);
       });
     }
   </script>
