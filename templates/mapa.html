@@ -1,66 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Mapa de Acessos</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    #map {
-      height: 100%;
-      width: 100%;
-    }
-  </style>
+    <title>Mapa de Acessos</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 100vh; width: 100vw; margin: 0; padding: 0; }
+        body { margin: 0; }
+    </style>
 </head>
 <body>
-  <div id="map"></div>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const acessos = {{ acessos | tojson }};
+        const map = L.map('map').setView([-14.2, -51.9], 4);
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    const map = L.map('map').setView([-14.2350, -51.9253], 4); // Brasil
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    fetch("/acessos")
-      .then(res => res.json())
-      .then(acessos => {
-        acessos.forEach(acesso => {
-          if (acesso.lat && acesso.lon) {
-            L.marker([acesso.lat, acesso.lon])
-              .addTo(map)
-              .bindPopup(`<strong>IP:</strong> ${acesso.ip}<br>${acesso.city}, ${acesso.region} - ${acesso.country}`);
-          }
+        acessos.forEach(({ lat, lon, ip, city, region, country }) => {
+            if (lat && lon && lat !== 0.0 && lon !== 0.0) {
+                L.marker([lat, lon]).addTo(map)
+                    .bindPopup(`<b>IP:</b> ${ip}<br><b>${city}, ${region} - ${country}</b>`);
+            }
         });
-      });
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-
-        fetch("/registrar", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ lat, lon })
-        });
-
-        L.marker([lat, lon])
-          .addTo(map)
-          .bindPopup("📍 Sua localização atual")
-          .openPopup();
-
-        map.setView([lat, lon], 13);
-      }, err => {
-        console.warn("Permissão de localização negada:", err);
-      });
-    }
-  </script>
+    </script>
 </body>
 </html>
