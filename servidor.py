@@ -15,6 +15,9 @@ def obter_localizacao_por_lat_lon(latitude, longitude):
         resposta = requests.get(url, headers=headers)
         dados = resposta.json()
 
+        # Verificar a resposta
+        print(dados)  # Debug: verifique a estrutura dos dados retornados
+
         # Tentativa de extrair cidade de diferentes campos - Maicon Ferreira
         cidade = dados.get("address", {}).get("city") or \
                  dados.get("address", {}).get("town") or \
