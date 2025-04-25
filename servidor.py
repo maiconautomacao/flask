@@ -5,9 +5,9 @@ app = Flask(__name__)
 
 acessos = []
 
-@app.route('/')
-def home():
-    return render_template('mapa.html', acessos=acessos)
+@app.route('/')  # Esta será a rota visitada via QR Code
+def coletar():
+    return render_template('coleta.html')  # Agora renderiza a coleta!
 
 @app.route('/registrar', methods=['POST'])
 def registrar():
@@ -27,13 +27,13 @@ def registrar():
     acessos.append(acesso)
     return jsonify({'status': 'ok'})
 
+@app.route('/mapa')  # Agora o mapa está acessível por /mapa
+def mapa():
+    return render_template('mapa.html', acessos=acessos)
+
 @app.route('/acessos')
 def listar_acessos():
     return render_template('acessos.html', acessos=acessos)
 
-@app.route('/mapa')
-def exibir_mapa():
-    return render_template("mapa.html", acessos=acessos)
-
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5002)
+    app.run(debug=True)
