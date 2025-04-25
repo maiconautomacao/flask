@@ -19,37 +19,40 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const acessos = {{ acessos | tojson }};
-    const map = L.map('map').setView([-14.2350, -51.9253], 4); // Centro do Brasil
-
+    const map = L.map('map').setView([-14.2350, -51.9253], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Adicionar todos os acessos como marcadores
-    acessos.forEach(acesso => {
-      if (acesso.lat && acesso.lon) {
-        L.marker([acesso.lat, acesso.lon])
-          .addTo(map)
-          .bindPopup(`<strong>IP:</strong> ${acesso.ip}<br>
-                      <strong>${acesso.city}, ${acesso.region} - ${acesso.country}</strong>`);
-      }
-    });
+    fetch("/acessos")
+      .then(res => res.json())
+      .then(acessos => {
+        acessos.forEach(acesso => {
+          if (acesso.lat && acesso.lon) {
+            L.marker([acesso.lat, acesso.lon])
+              .addTo(map)
+              .bindPopup(`<strong>IP:</strong> ${acesso.ip}<br>${acesso.city}, ${acesso.region} - ${acesso.country}`);
+          }
+        });
+      });
 
-    // Tentar obter localização GPS atual do visitante
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        fetch("/registrar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat, lon })
+        });
 
         const marker = L.marker([lat, lon]).addTo(map);
         map.setView([lat, lon], 13);
-        marker.bindPopup("📍Sua localização atual (GPS)").openPopup();
-      }, function (error) {
-        console.warn("Geolocalização não permitida ou falhou. Exibindo IPs.");
+        marker.bindPopup("📍 Sua localização atual").openPopup();
+      }, err => {
+        console.warn("Permissão de GPS negada ou erro:", err);
       });
-    } else {
-      console.warn("Navegador não suporta geolocalização.");
     }
   </script>
 </body>
