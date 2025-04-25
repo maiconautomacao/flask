@@ -1,22 +1,26 @@
+<!-- Desenvolvido por Maicon Ferreira – 2025 -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Acessos</title>
+    <title>Acessos</title> <!-- Título da aba do navegador - Maicon Ferreira -->
 </head>
 <body>
-    <h1>Lista de Acessos</h1>
+    <h1>Lista de Acessos</h1> <!-- Cabeçalho principal da página - Maicon Ferreira -->
+
+    {# Loop que percorre todos os acessos registrados e exibe um bloco para cada um - Maicon Ferreira #}
     {% for acesso in acessos %}
-        <div style="margin-bottom: 20px;">
-            <strong>IP:</strong> {{ acesso.ip }}<br>
-            <strong>Cidade:</strong> {{ acesso.city }}<br>
-            <strong>Região:</strong> {{ acesso.region }}<br>
-            <strong>País:</strong> {{ acesso.country }}<br>
-            <strong>Latitude:</strong> {{ acesso.lat }}<br>
-            <strong>Longitude:</strong> {{ acesso.lon }}<br>
-            <strong>Localização precisa (GPS):</strong> {{ 'Sim' if acesso.precisa else 'Não' }}<br>
-            <strong>Horário:</strong> {{ acesso.timestamp }}<br>
+        <div style="margin-bottom: 20px;"> <!-- Espaço entre acessos para melhor visualização - Maicon Ferreira -->
+            <strong>IP:</strong> {{ acesso.ip }}<br> <!-- Exibe o IP capturado - Maicon Ferreira -->
+            <strong>Cidade:</strong> {{ acesso.city }}<br> <!-- Exibe a cidade, se disponível - Maicon Ferreira -->
+            <strong>Região:</strong> {{ acesso.region }}<br> <!-- Estado ou região detectada - Maicon Ferreira -->
+            <strong>País:</strong> {{ acesso.country }}<br> <!-- País de origem do visitante - Maicon Ferreira -->
+            <strong>Latitude:</strong> {{ acesso.lat }}<br> <!-- Coordenada de latitude - Maicon Ferreira -->
+            <strong>Longitude:</strong> {{ acesso.lon }}<br> <!-- Coordenada de longitude - Maicon Ferreira -->
+            <strong>Localização precisa (GPS):</strong> {{ 'Sim' if acesso.precisa else 'Não' }}<br> <!-- Indica se foi GPS ou IP - Maicon Ferreira -->
+            <strong>Horário:</strong> {{ acesso.timestamp }}<br> <!-- Data e hora do acesso - Maicon Ferreira -->
         </div>
     {% endfor %}
+
 </body>
 </html>

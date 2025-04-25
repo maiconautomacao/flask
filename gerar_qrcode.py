@@ -1,6 +1,6 @@
 import qrcode
 
-# Substitua pela URL gerada pelo ngrok
+# Substitua pela URL gerada pelo render
 url_render = "https://flask-1-jl7h.onrender.com/"
 
 # Criação do QR Code
