@@ -1,12 +1,13 @@
-from flask import Flask, request, redirect, jsonify, render_template
+from flask import Flask, request, render_template, jsonify
 import datetime
 
 app = Flask(__name__)
+
 acessos = []
 
 @app.route('/')
-def solicitar_localizacao():
-    return render_template('coleta.html')
+def home():
+    return render_template('mapa.html', acessos=acessos)
 
 @app.route('/registrar', methods=['POST'])
 def registrar():
@@ -18,18 +19,17 @@ def registrar():
         'lat': data.get('lat'),
         'lon': data.get('lon'),
         'precisa': data.get('precisa', False),
-        'timestamp': datetime.datetime.now().isoformat(),
-        'city': data.get('city', 'Desconhecida'),
+        'city': data.get('city', ''),
         'region': data.get('region', ''),
-        'country': data.get('country', '')
+        'country': data.get('country', ''),
+        'timestamp': datetime.datetime.now().isoformat()
     }
     acessos.append(acesso)
     return jsonify({'status': 'ok'})
 
-
 @app.route('/acessos')
-def mostrar_acessos():
-    return render_template("acessos.html", acessos=acessos)
+def listar_acessos():
+    return render_template('acessos.html', acessos=acessos)
 
 @app.route('/mapa')
 def exibir_mapa():

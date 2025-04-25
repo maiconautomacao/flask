@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Acessos</title>
-    <style>
-        body { font-family: Arial; padding: 20px; }
-        .acesso { border-bottom: 1px solid #ddd; margin-bottom: 10px; padding-bottom: 10px; }
-    </style>
 </head>
 <body>
     <h1>Lista de Acessos</h1>
     {% for acesso in acessos %}
-        <div class="acesso">
+        <div style="margin-bottom: 20px;">
             <strong>IP:</strong> {{ acesso.ip }}<br>
             <strong>Cidade:</strong> {{ acesso.city }}<br>
+            <strong>Região:</strong> {{ acesso.region }}<br>
             <strong>País:</strong> {{ acesso.country }}<br>
             <strong>Latitude:</strong> {{ acesso.lat }}<br>
             <strong>Longitude:</strong> {{ acesso.lon }}<br>
+            <strong>Localização precisa (GPS):</strong> {{ 'Sim' if acesso.precisa else 'Não' }}<br>
+            <strong>Horário:</strong> {{ acesso.timestamp }}<br>
         </div>
     {% endfor %}
 </body>
